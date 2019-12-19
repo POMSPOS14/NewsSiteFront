@@ -270,7 +270,7 @@ export default class FileContainerPage {
           `;
             postEl.querySelector('[data-action=remove]').addEventListener('click', evt => {
                 evt.preventDefault();
-                this._context.delete(`/container/ `, {},
+                this._context.delete(`/container/${file.id}`, {},
                     () => {
                         if (file.extension === 'image') {
                            this.loadAllImage();
