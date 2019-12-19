@@ -71,6 +71,11 @@ export default class MainPage {
                       </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Сохранить</button>
+                    <div style="float: right">
+                        <form name="f1">
+                            <input data-id="menu-checkbox" type="checkbox" name="yourName" id="ch1"> Отправить в Вк
+                        </form>
+                    </div>
                   </form>
                 </div>
               </div>
@@ -103,6 +108,8 @@ export default class MainPage {
         </div>
       </div>
     `;
+
+        let element = document.querySelector('[data-id=menu-checkbox]');
 
         this._rootEl.querySelector('[data-id=menu-main]').addEventListener('click', evt => {
             evt.preventDefault();
@@ -217,6 +224,10 @@ export default class MainPage {
                     this._newsButtonFormBack.style.display = "none";
                     this._buttonFormNext.style.display = "block";
                     this.loadFirst();
+                    console.log(element.checked);
+                    if (element.checked) {
+                        this.loadPy();
+                    }
                 },
                 error => {
                     this.showError(error);
@@ -241,14 +252,18 @@ export default class MainPage {
         this._context.get(`/posts/after/${this.lastId}`, {},
             text => {
                 const posts = JSON.parse(text);
-                if (posts.length < 4){
+                if (posts.length < 4) {
                     this._buttonFormNext.style.display = "none";
                 }
-                    this.rebuildListAfterClickButton(posts);
+                this.rebuildListAfterClickButton(posts);
             },
             error => {
                 this.showError(error);
             });
+    }
+
+    check(document) {
+        document.f1.ch1.checked = true;
     }
 
     createQuantityNewPosts(QuantityPosts) {
@@ -273,7 +288,7 @@ export default class MainPage {
         this._context.get(`/posts/before/${this.firstId}`, {},
             text => {
                 const quantity = JSON.parse(text);
-                if(quantity!==0){
+                if (quantity !== 0) {
                     this.createQuantityNewPosts(quantity);
                 }
             },
@@ -430,6 +445,12 @@ export default class MainPage {
             });
             this._postsContainerEl.appendChild(postEl);
         }
+    }
+
+    loadPy() {
+        const x = new XMLHttpRequest();
+        x.open("GET", "https://javaschoolvkbot.herokuapp.com", true);
+        x.send(null);
     }
 
     goInvisibilityNewsForm() {
