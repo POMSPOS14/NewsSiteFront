@@ -130,5 +130,5 @@ const [backendUrl, websocketUrl] = ['localhost', '127.0.0.1'].includes(window.lo
   ['http://localhost:9999', 'ws://localhost:9999/ws'] : ['https://boot-coursar.herokuapp.com', 'wss://boot-coursar.herokuapp.com/ws'];
 
 const api = new Api(`${backendUrl}/api`);
-new Context(document.getElementById('root'), api, router, translator, backendUrl, websocketUrl);
-// new Context(document.getElementById('root'), api, router, translator, `${backendUrl}/api/files/entity`, websocketUrl);
+// new Context(document.getElementById('root'), api, router, translator, backendUrl, websocketUrl);
+new Context(document.getElementById('root'), api, router, translator, `${backendUrl}/api/files/entity`, websocketUrl);
