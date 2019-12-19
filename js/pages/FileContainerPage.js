@@ -148,7 +148,13 @@ export default class FileContainerPage {
                     this._nameInputEl.value = '';
                     this._mediaNameInputEl.value = '';
                     this._mediaInputEl.value = '';
-                    this.loadAll();
+                    if (data.extension === 'image') {
+                        this.loadAllImage();
+                    }else if (data.extension === 'video'){
+                        this.loadAllVideo();
+                    }else if (data.extension === 'audio'){
+                        this.loadAllAudio();
+                    }
                 },
                 error => {
                     this.showError(error);

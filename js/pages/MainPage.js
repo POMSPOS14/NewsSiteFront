@@ -1,5 +1,8 @@
 // TODO: remove code duplication
 export default class MainPage {
+    lastId = 0;
+    firstId = 0;
+
     constructor(context) {
         this._context = context;
         this._rootEl = context.rootEl();
@@ -45,8 +48,8 @@ export default class MainPage {
             <a href="#" data-action="create-new-news" class="btn btn-outline-primary" style="min-width: 100%; margin: 10px;">Назад</a>
           </div>
         </form>
-        
-        
+        <div class="row" data-id="new-posts" style="min-height: 20px"> 
+        </div>  
         <div class="row" data-id="news-form" style="display: none">
             <div class="col">
               <div class="card">
@@ -76,6 +79,11 @@ export default class MainPage {
         </div>
         <div class="row" data-id="posts-container">
         </div>
+        <form data-id="button-next" class="form-inline my-2 my-lg-0">
+          <div class="col text-center" style="margin-top: 10px">
+            <a href="#" data-action="create-next-news" class="btn btn-outline-primary" style="min-width: 100%; margin: 10px;">Ещё новости</a>
+          </div>
+        </form>
       </div>
       <!-- TODO: https://getbootstrap.com/docs/4.4/components/modal/ -->
       <div class="modal fade" data-id="error-modal" tabindex="-1">
@@ -118,6 +126,8 @@ export default class MainPage {
         this._errorModal = $('[data-id=error-modal]'); // jquery
         this._errorMessageEl = this._rootEl.querySelector('[data-id=error-message]');
 
+
+        this._newPostsEl = this._rootEl.querySelector('[data-id=new-posts]');
         this._postsContainerEl = this._rootEl.querySelector('[data-id=posts-container]');
         this._postCreateFormEl = this._rootEl.querySelector('[data-id=post-edit-form]');
         this._idInputEl = this._postCreateFormEl.querySelector('[data-id=id-input]');
@@ -130,7 +140,13 @@ export default class MainPage {
         this._newsForm = this._rootEl.querySelector('[data-id="news-form"]');
         this._newsButtonForm = this._rootEl.querySelector('[data-id="news-button-form"]');
         this._newsButtonFormBack = this._rootEl.querySelector('[data-id="news-button-form-back"]');
+        this._buttonFormNext = this._rootEl.querySelector('[data-id="button-next"]');
         this._createNewNews = this._newsButtonForm.querySelector('[data-id="create-new-news"]');
+
+        this._buttonFormNext.addEventListener('click', evt => {
+            evt.preventDefault();
+            this.loadNext();
+        });
 
         this._newsButtonForm.addEventListener('click', evt => {
             evt.preventDefault();
@@ -138,16 +154,19 @@ export default class MainPage {
             this.goVisibilityNewsForm();
             this._newsButtonForm.style.display = "none";
             this._newsButtonFormBack.style.display = "block";
+            this._buttonFormNext.style.display = "none";
+            this._newPostsEl.style.display = "none";
         });
 
         this._newsButtonFormBack.addEventListener('click', evt => {
             evt.preventDefault();
-            this.loadAll();
+            this.loadFirst();
             this.goInvisibilityNewsForm();
             this._newsButtonForm.style.display = "block";
             this._newsButtonFormBack.style.display = "none";
+            this._buttonFormNext.style.display = "block";
+            this._newPostsEl.style.display = "block";
         });
-
 
         this._searchFormEl.addEventListener('submit', evt => {
             evt.preventDefault();
@@ -156,7 +175,7 @@ export default class MainPage {
             this._context.get('/posts/search' + str, {},
                 text => {
                     const posts = JSON.parse(text);
-                    this.rebuildList(posts);
+                    this.rebuild(posts);
                 },
                 error => {
                     this.showError(error);
@@ -195,19 +214,20 @@ export default class MainPage {
                     this._mediaInputEl.value = '';
                     this._headerInputEl.value = '';
                     this.goInvisibilityNewsForm();
-                    this.loadAll();
+                    this._newsButtonForm.style.display = "block";
+                    this._newsButtonFormBack.style.display = "none";
+                    this._buttonFormNext.style.display = "block";
+                    this.loadFirst();
                 },
                 error => {
                     this.showError(error);
                 });
         });
-        // const uuid = JSON.parse(localStorage.getItem('profile')).id;
-        // console.log(uuid);
-        this.loadAll();
-        // this.pollNewPosts();
+        this.loadFirst();
+        this.pollNewPosts();
     }
 
-    loadAll() {
+    loadFirst() {
         this._context.get('/posts', {},
             text => {
                 const posts = JSON.parse(text);
@@ -216,6 +236,63 @@ export default class MainPage {
             error => {
                 this.showError(error);
             });
+    }
+
+    loadNext() {
+        this._context.get(`/posts/after/${this.lastId}`, {},
+            text => {
+                const posts = JSON.parse(text);
+                if (posts.length < 4){
+                    this._buttonFormNext.style.display = "none";
+                }
+                    this.rebuildListAfterClickButton(posts);
+            },
+            error => {
+                this.showError(error);
+            });
+    }
+
+    createQuantityNewPosts(QuantityPosts) {
+        this._newPostsEl.innerHTML = '';
+        const QuantityNewPosts = document.createElement('div');
+        QuantityNewPosts.className = 'col-12';
+        QuantityNewPosts.innerHTML = `
+            <div class="container col text-center" style="margin-top: 10px">
+                <a href="#" data-action="go-new-posts" style="min-width: 100%">Новые новости: ${QuantityPosts}</a>      
+            </div>
+    `;
+        QuantityNewPosts.querySelector('[data-action=go-new-posts]').addEventListener('click', evt => {
+            evt.preventDefault();
+            this.loadFirst();
+            this._newPostsEl.innerHTML = '';
+        });
+
+        this._newPostsEl.appendChild(QuantityNewPosts);
+    }
+
+    loadQuantityNewPosts() {
+        this._context.get(`/posts/before/${this.firstId}`, {},
+            text => {
+                const quantity = JSON.parse(text);
+                if(quantity!==0){
+                    this.createQuantityNewPosts(quantity);
+                }
+            },
+            error => {
+                this.showError(error);
+            });
+    }
+
+
+    rebuildList(posts) {
+        this._postsContainerEl.innerHTML = '';
+        const [first] = posts;
+        this.firstId = first.id;
+        this.rebuild(posts);
+    }
+
+    rebuildListAfterClickButton(posts) {
+        this.rebuild(posts);
     }
 
     rebuildOne(post) {
@@ -256,9 +333,9 @@ export default class MainPage {
         this._postsContainerEl.appendChild(postEl);
     }
 
-    rebuildList(posts) {
-        this._postsContainerEl.innerHTML = '';
+    rebuild(posts) {
         for (const post of posts) {
+            this.lastId = post.id;
             const postEl = document.createElement('div');
             postEl.className = 'col-6';
 
@@ -309,13 +386,14 @@ export default class MainPage {
                 this._postsContainerEl.innerHTML = '';
                 this._newsButtonForm.style.display = "none";
                 this._newsButtonFormBack.style.display = "block";
+                this._buttonFormNext.style.display = "none";
                 this.rebuildOne(post)
             });
             postEl.querySelector('[data-action=like]').addEventListener('click', evt => {
                 evt.preventDefault();
                 this._context.post(`/posts/${post.id}/likes`, null, {},
                     () => {
-                        this.loadAll();
+                        this.loadFirst();
                     }, error => {
                         this.showError(error);
                     });
@@ -324,7 +402,7 @@ export default class MainPage {
                 evt.preventDefault();
                 this._context.delete(`/posts/${post.id}/likes`, {},
                     () => {
-                        this.loadAll();
+                        this.loadFirst();
                     }, error => {
                         this.showError(error);
                     });
@@ -346,7 +424,7 @@ export default class MainPage {
                 evt.preventDefault();
                 this._context.delete(`/posts/${post.id}`, {},
                     () => {
-                        this.loadAll();
+                        this.loadFirst();
                     }, error => {
                         this.showError(error);
                     });
@@ -363,9 +441,10 @@ export default class MainPage {
         this._newsForm.style.display = "block";
     }
 
+
     pollNewPosts() {
         this._timeout = setTimeout(() => {
-            this.loadAll();
+            this.loadQuantityNewPosts();
             this.pollNewPosts();
         }, 5000);
     }
