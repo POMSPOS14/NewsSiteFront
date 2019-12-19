@@ -57,6 +57,7 @@ export default class FileContainerPage {
               <button type="button" data-id="load-image" class="btn btn-secondary">Изображения</button>
               <button type="button" data-id="load-video" class="btn btn-secondary">Видео</button>
               <button type="button" data-id="load-audio" class="btn btn-secondary ">Аудио</button> 
+              <button type="button" data-id="load-pdf" class="btn btn-secondary ">PDF</button> 
             </div>
          </div>
          <div class="row" data-id="posts-container">
@@ -77,7 +78,7 @@ export default class FileContainerPage {
             <div data-id="error-message" class="modal-body">
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
             </div>
           </div>
         </div>
@@ -103,6 +104,7 @@ export default class FileContainerPage {
         this._fileButtonImage = this._rootEl.querySelector('[data-id=load-image]');
         this._fileButtonVideo = this._rootEl.querySelector('[data-id=load-video]');
         this._fileButtonAudio = this._rootEl.querySelector('[data-id=load-audio]');
+        this._fileButtonPdf = this._rootEl.querySelector('[data-id=load-pdf]');
 
         this._idInputEl = this._postCreateFormEl.querySelector('[data-id=id-input]');
         this._nameInputEl = this._postCreateFormEl.querySelector('[data-id=content-input]');
@@ -173,6 +175,10 @@ export default class FileContainerPage {
             evt.preventDefault();
             this.loadAllAudio();
         });
+        this._fileButtonPdf.addEventListener('click', evt => {
+            evt.preventDefault();
+            this.pdf();
+        });
     }
 
     loadAll() {
@@ -185,6 +191,30 @@ export default class FileContainerPage {
                 this.showError(error);
             });
     }
+
+
+    pdf(){
+        this._context.get('/files/pdf', {},
+            text => {
+                const data = JSON.parse(text);
+                console.log(data.name);
+                this._postsContainerEl.innerHTML = '';
+                const postEl = document.createElement('div');
+                postEl.className = 'col-12';
+                console.log(this._mediaNameInputEl.value);
+                postEl.innerHTML = `            
+                 <div class="col text-left">
+                    <a style="float: left" href="${this._context.mediaUrl()}/${data.name}" data-action="pdf" class="btn btn-sm btn-primary" target="_blank">Посмотреть все посты</a>
+                  </div> 
+                  `;
+                this._postsContainerEl.appendChild(postEl);
+            },
+            error => {
+                this.showError(error);
+            });
+    }
+
+
 
     loadAllImage()  {
         this._context.get('/container/image', {},
@@ -219,6 +249,7 @@ export default class FileContainerPage {
             });
     }
 
+
     rebuildList(files) {
         this._postsContainerEl.innerHTML = '';
         for (const file of files) {
@@ -239,7 +270,7 @@ export default class FileContainerPage {
           `;
             postEl.querySelector('[data-action=remove]').addEventListener('click', evt => {
                 evt.preventDefault();
-                this._context.delete(`/container/${file.id}`, {},
+                this._context.delete(`/container/ `, {},
                     () => {
                         if (file.extension === 'image') {
                            this.loadAllImage();

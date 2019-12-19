@@ -44,7 +44,7 @@ export default class MessagesPage {
                     <input type="text" data-id="message-input" class="form-control" >
                   </div>
                   <div class="col-3">
-                    <button type="submit" class="form-control btn btn-primary">Send</button>
+                    <button type="submit" class="form-control btn btn-primary">Отправить</button>
                   </div>
                 </div>
               </form>
@@ -52,12 +52,11 @@ export default class MessagesPage {
           </div>
         </div>
       </div>
-      <!-- TODO: https://getbootstrap.com/docs/4.4/components/modal/ -->
       <div class="modal fade" data-id="error-modal" tabindex="-1">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Error!</h5>
+              <h5 class="modal-title" id="exampleModalLabel">Ошибка!</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -65,7 +64,7 @@ export default class MessagesPage {
             <div data-id="error-message" class="modal-body">
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
             </div>
           </div>
         </div>
@@ -107,7 +106,7 @@ export default class MessagesPage {
       }
     });
 
-    this._errorModal = $('[data-id=error-modal]'); // jquery
+    this._errorModal = $('[data-id=error-modal]');
     this._errorMessageEl = this._rootEl.querySelector('[data-id=error-message]');
 
     this._messagesContainerEl = this._rootEl.querySelector('[data-id=messages-container]');

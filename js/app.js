@@ -16,7 +16,6 @@ class Context {
       this.route(path, false);
     });
     this._translator = translator;
-    // see https://developer.mozilla.org/ru/docs/Web/API/Web_Storage_API
     this._auth = localStorage.getItem('auth');
     this._profile = JSON.parse(localStorage.getItem('profile'));
     if (!this._auth) {
@@ -132,4 +131,4 @@ const [backendUrl, websocketUrl] = ['localhost', '127.0.0.1'].includes(window.lo
 
 const api = new Api(`${backendUrl}/api`);
 new Context(document.getElementById('root'), api, router, translator, backendUrl, websocketUrl);
-
+// new Context(document.getElementById('root'), api, router, translator, `${backendUrl}/api/files/entity`, websocketUrl);

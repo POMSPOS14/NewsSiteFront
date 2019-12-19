@@ -1,4 +1,3 @@
-// TODO: remove code duplication
 export default class LoginPage {
   constructor(context) {
     this._context = context;
@@ -16,10 +15,6 @@ export default class LoginPage {
 
           <div class="collapse navbar-collapse" id="navbar-supported-content">
             <ul class="navbar-nav mr-auto"></ul>
-            <form data-id="search-form" class="form-inline my-2 my-lg-0">
-              <input class="form-control mr-sm-2" type="search" placeholder="Search">
-              <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-            </form>
           </div>
         </nav>
         <div class="row">
@@ -28,26 +23,25 @@ export default class LoginPage {
                 <div class="card-body">
                   <form data-id="login-form">
                     <div class="form-group">
-                      <label for="login-input">Login</label>
+                      <label for="login-input">Логин</label>
                       <input type="text" data-id="login-input" class="form-control" id="login-input">
                     </div>
                     <div class="form-group">
-                      <label for="password-input">Password</label>
+                      <label for="password-input">Пароль</label>
                       <input type="password" data-id="password-input" class="form-control" id="password-input">
                     </div>
-                    <button type="submit" class="btn btn-primary">Login</button>
+                    <button type="submit" class="btn btn-primary">Логин</button>
                   </form>
                 </div>
               </div>
             </div>
         </div>
       </div>
-      <!-- TODO: https://getbootstrap.com/docs/4.4/components/modal/ -->
       <div class="modal fade" data-id="error-modal" tabindex="-1">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Error!</h5>
+              <h5 class="modal-title" id="exampleModalLabel">Ошибка!</h5>
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -55,7 +49,7 @@ export default class LoginPage {
             <div data-id="error-message" class="modal-body">
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
             </div>
           </div>
         </div>
